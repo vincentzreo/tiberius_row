@@ -2,6 +2,14 @@
 name = "tiberius_row"
 version = "0.1.0"
 edition = "2021"
+authors = ["vincentzreo <1978892854@qq.com>"]
+description = "一个简化从Tiberius SQL Server客户端行数据到Rust结构体转换的过程宏库"
+license = "MIT"
+repository = "https://github.com/vincentzreo/tiberius_row"
+documentation = "https://docs.rs/tiberius_row"
+readme = "README.md"
+keywords = ["tiberius", "sql-server", "derive", "macro", "orm"]
+categories = ["database"]
 
 [lib]
 proc-macro = true
