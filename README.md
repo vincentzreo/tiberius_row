@@ -20,6 +20,8 @@ tiberius_row = "0.1.0"
 tiberius = { version = "0.12.3", features = ["chrono"] }
 serde = { version = "1.0", features = ["derive"] }
 anyhow = "1.0"
+chrono = "0.4.40"
+serde_yaml = "0.9.34"
 ```
 
 ## 使用方法
