@@ -1,6 +1,6 @@
 [package]
 name = "tiberius_row"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 authors = ["vincentzreo <1978892854@qq.com>"]
 description = "一个简化从Tiberius SQL Server客户端行数据到Rust结构体转换的过程宏库"
