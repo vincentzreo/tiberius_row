@@ -19,88 +19,235 @@ pub(crate) fn process_row_ext(input: DeriveInput) -> TokenStream {
     where
         Self: Sized + serde::Deserialize<'static>,
     {
-        let mut yml_str = "".to_string();
+        use tiberius::FromSql as _;
+        let mut json_map = serde_json::Map::new();
         let cols = row
             .columns()
             .iter()
             .map(|c| c.name().to_string())
             .collect::<Vec<_>>();
+
         for (col, val) in cols.iter().zip(row.into_iter()) {
             match val {
                 tiberius::ColumnData::I64(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::Number(v.into()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::I32(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::Number(v.into()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::I16(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::Number((v as i64).into()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::U8(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::Number((v as u64).into()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::F32(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        if let Some(num) = serde_json::Number::from_f64(v as f64) {
+                            json_map.insert(col.clone(), serde_json::Value::Number(num));
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::String(v.to_string()));
+                        }
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::F64(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        if let Some(num) = serde_json::Number::from_f64(v) {
+                            json_map.insert(col.clone(), serde_json::Value::Number(num));
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::String(v.to_string()));
+                        }
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::Bit(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::Bool(v));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::String(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: {}\n", col, "")),
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::String(v.to_string()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::String(String::new()));
+                    }
                 },
                 tiberius::ColumnData::Numeric(v) => match v {
-                    Some(v) => yml_str.push_str(&format!("{}: {}\n", col, v)),
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::String(v.to_string()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
+                tiberius::ColumnData::Guid(v) => match v {
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::String(v.to_string()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
+                tiberius::ColumnData::Binary(v) => match v {
+                    Some(v) => {
+                        let base64_str = base64::encode(v);
+                        json_map.insert(col.clone(), serde_json::Value::String(base64_str));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
+                tiberius::ColumnData::Xml(v) => match v {
+                    Some(v) => {
+                        json_map.insert(col.clone(), serde_json::Value::String(v.to_string()));
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
                 tiberius::ColumnData::DateTime(v) => match v {
                     Some(v) => {
-                        let base_date = chrono::NaiveDate::from_ymd_opt(1900, 1, 1).unwrap();
-                        let days_duration = chrono::Duration::days(v.days().into());
-                        let seconds = v.seconds_fragments() as f64 / 300.0; // Assuming 300 fragments per second
-                        let seconds_duration = chrono::Duration::seconds(seconds.trunc() as i64);
-                        let nano_seconds_duration = chrono::Duration::nanoseconds(
-                            ((seconds.fract()) * 1_000_000_000.0) as i64,
+                        let p_datetime = tiberius::time::time::PrimitiveDateTime::from_sql(
+                            &tiberius::ColumnData::DateTime(Some(v)),
                         );
-
-                        let naive_datetime = base_date.and_hms_opt(0, 0, 0).unwrap()
-                            + days_duration
-                            + seconds_duration
-                            + nano_seconds_duration;
-
-                        yml_str.push_str(
-                            format!(
-                                "{}: {}\n",
-                                col,
-                                chrono::DateTime::<chrono::Utc>::from_utc(
-                                    naive_datetime,
-                                    chrono::Utc
-                                )
-                            )
-                            .as_str(),
-                        );
+                        if let Ok(Some(p_datetime)) = p_datetime {
+                            json_map.insert(
+                                col.clone(),
+                                serde_json::Value::String(p_datetime.to_string().replace(" ", "T")),
+                            );
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::Null);
+                        }
                     }
-                    None => yml_str.push_str(&format!("{}: none\n", col)),
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
                 },
-                _ => {
-                    return Err(anyhow::anyhow!(format!(
-                        "unsupported column data type: {:?}",
-                        val
-                    )));
-                }
+                tiberius::ColumnData::SmallDateTime(v) => match v {
+                    Some(v) => {
+                        let p_datetime = tiberius::time::time::PrimitiveDateTime::from_sql(
+                            &tiberius::ColumnData::SmallDateTime(Some(v)),
+                        );
+                        if let Ok(Some(p_datetime)) = p_datetime {
+                            json_map.insert(
+                                col.clone(),
+                                serde_json::Value::String(p_datetime.to_string()),
+                            );
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::Null);
+                        }
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
+                tiberius::ColumnData::Time(v) => match v {
+                    Some(v) => {
+                        let p_datetime = tiberius::time::time::Time::from_sql(
+                            &tiberius::ColumnData::Time(Some(v)),
+                        );
+                        if let Ok(Some(p_datetime)) = p_datetime {
+                            json_map.insert(
+                                col.clone(),
+                                serde_json::Value::String(p_datetime.to_string()),
+                            );
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::Null);
+                        }
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
+                tiberius::ColumnData::Date(v) => match v {
+                    Some(v) => {
+                        let p_datetime = tiberius::time::time::Date::from_sql(
+                            &tiberius::ColumnData::Date(Some(v)),
+                        );
+                        if let Ok(Some(p_datetime)) = p_datetime {
+                            json_map.insert(
+                                col.clone(),
+                                serde_json::Value::String(p_datetime.to_string()),
+                            );
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::Null);
+                        }
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
+                tiberius::ColumnData::DateTime2(v) => match v {
+                    Some(v) => {
+                        let p_datetime = tiberius::time::time::PrimitiveDateTime::from_sql(
+                            &tiberius::ColumnData::DateTime2(Some(v)),
+                        );
+                        if let Ok(Some(p_datetime)) = p_datetime {
+                            json_map.insert(
+                                col.clone(),
+                                serde_json::Value::String(p_datetime.to_string().replace(" ", "T")),
+                            );
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::Null);
+                        }
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
+                tiberius::ColumnData::DateTimeOffset(v) => match v {
+                    Some(v) => {
+                        let p_datetime = tiberius::time::time::OffsetDateTime::from_sql(
+                            &tiberius::ColumnData::DateTimeOffset(Some(v)),
+                        );
+                        if let Ok(Some(p_datetime)) = p_datetime {
+                            json_map.insert(
+                                col.clone(),
+                                serde_json::Value::String(p_datetime.to_string()),
+                            );
+                        } else {
+                            json_map.insert(col.clone(), serde_json::Value::Null);
+                        }
+                    }
+                    None => {
+                        json_map.insert(col.clone(), serde_json::Value::Null);
+                    }
+                },
             }
         }
-        let deserialized: Self = serde_yaml::from_str(Box::leak(Box::new(yml_str)))?;
+
+        let json_value = serde_json::Value::Object(json_map);
+
+        let deserialized: Self = serde_json::from_value(json_value)?;
         Ok(deserialized)
     }
         }

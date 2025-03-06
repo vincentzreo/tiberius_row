@@ -1,0 +1,19 @@
+id: 1
+int_col: 42
+bigint_col: 9223372036854775807
+smallint_col: 32767
+tinyint_col: 255
+bit_col: true
+decimal_col: 123.45
+float_col: 3.14159
+real_col: 2.71828
+date_col: 2023-01-01
+datetime_col: 2023-01-01 12:34:56.0
+datetime2_col: 2023-01-01 12:34:56.7890123
+time_col: 12:34:56.0
+char_col: CHAR      
+varchar_col: VARCHAR
+nvarchar_col: NVARCHAR
+text_col: TEXT
+binary_col: Gis8
+uniqueidentifier_col: 50bfaebe-8990-487d-8b56-e677a26619d5

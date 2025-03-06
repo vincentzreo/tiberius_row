@@ -1,0 +1,67 @@
+CREATE TABLE test (
+    id INT PRIMARY KEY IDENTITY(1, 1),
+    int_col INT,
+    bigint_col BIGINT,
+    smallint_col SMALLINT,
+    tinyint_col TINYINT,
+    bit_col BIT,
+    decimal_col DECIMAL(18, 2),
+    float_col FLOAT,
+    real_col REAL,
+    date_col DATE,
+    datetime_col DATETIME,
+    datetime2_col DATETIME2,
+    time_col TIME,
+    char_col CHAR(10),
+    varchar_col VARCHAR(100),
+    nvarchar_col NVARCHAR(100),
+    text_col TEXT,
+    binary_col VARBINARY(100),
+    uniqueidentifier_col UNIQUEIDENTIFIER,
+    xml_col XML
+);
+
+INSERT INTO
+    test (
+        int_col,
+        bigint_col,
+        smallint_col,
+        tinyint_col,
+        bit_col,
+        decimal_col,
+        float_col,
+        real_col,
+        date_col,
+        datetime_col,
+        datetime2_col,
+        time_col,
+        char_col,
+        varchar_col,
+        nvarchar_col,
+        text_col,
+        binary_col,
+        uniqueidentifier_col,
+        xml_col
+    )
+VALUES
+    (
+        42,
+        9223372036854775807,
+        32767,
+        255,
+        1,
+        123.45,
+        3.14159,
+        2.71828,
+        '2023-01-01',
+        '2023-01-01 12:34:56',
+        '2023-01-01 12:34:56.7890123',
+        '12:34:56',
+        'CHAR      ',
+        'VARCHAR',
+        'NVARCHAR',
+        'TEXT',
+        0x1A2B3C,
+        NEWID(),
+        '<root><child>Hello, World!</child></root>'
+    )

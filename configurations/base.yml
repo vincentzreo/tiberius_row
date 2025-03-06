@@ -1,0 +1,6 @@
+database:
+  host: 101.95.95.58
+  port: 1433
+  username: sa
+  password: Ibm123
+  database_name: HYSK3
