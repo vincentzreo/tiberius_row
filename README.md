@@ -16,11 +16,18 @@
 
 ```toml
 [dependencies]
-tiberius_row = "0.1.0"
-base64 = "0.22.1"
+tiberius_row = "0.2.1"
+```
+
+默认情况下，`tiberius_row` 会自动包含所需的依赖。如果你想使用特定版本的依赖，可以禁用默认特性并手动添加依赖：
+
+```toml
+[dependencies]
+tiberius_row = { version = "0.2.1", default-features = false }
 tiberius = { version = "0.12.3", features = ["chrono", "rust_decimal", "time"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0.140"
+serde_json = "1.0"
+base64 = "0.22"
 anyhow = "1.0"
 ```
 
@@ -115,11 +122,18 @@ Add the following dependencies to your `Cargo.toml` file:
 
 ```toml
 [dependencies]
-tiberius_row = "0.1.0"
-base64 = "0.22.1"
+tiberius_row = "0.2.1"
+```
+
+
+By default, `tiberius_row` will automatically include the required dependencies. If you want to use a specific version of a dependency, you can disable the default features and manually add the dependencies:
+```toml
+[dependencies]
+tiberius_row = { version = "0.2.1", default-features = false }
 tiberius = { version = "0.12.3", features = ["chrono", "rust_decimal", "time"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_json = "1.0.140"
+serde_json = "1.0"
+base64 = "0.22"
 anyhow = "1.0"
 ```
 
